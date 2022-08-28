@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using dchv_api.Models;
 using dchv_api.DTOs;
 using dchv_api.FileHandlers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace dchv_api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class FileController : ControllerBase
