@@ -2,41 +2,58 @@ using Microsoft.AspNetCore.Mvc;
 using dchv_api.Models;
 using dchv_api.DTOs;
 using dchv_api.DataRepositories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace dchv_api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class PersonController : ControllerBase
 {
     private readonly IPersonRepository _repository;
+    private readonly ILogger<PersonController> _logger;
 
-    public PersonController(IPersonRepository repository)
+    public PersonController(ILogger<PersonController> logger, IPersonRepository repository)
     {
+        _logger = logger;
         _repository = repository;
     }
 
-    [HttpGet]
-    public ActionResult<PersonDTO> Get()
+    [HttpGet("{id}")]
+    public ActionResult<PersonDTO> Get([FromRoute] int id)
     {
-        throw new NotImplementedException();
+        Person? data = this._repository.Get(new Person{ ID = id });
+        if (data is null) return NotFound();
+        //TODO: map DTO to Model
+        return Ok(data);
     }
 
-    [HttpGet("{id}")]
-    public ActionResult<IEnumerable<PersonDTO>> Get([FromQuery] int id)
+    [HttpGet]
+    public ActionResult<IEnumerable<PersonDTO>> Get()
     {
-        throw new NotImplementedException();
+        IEnumerable<Person>? result = _repository.GetAll();
+        if (result is null || result.Count() == 0) return NoContent();
+        //TODO: map DTO to Model
+        return Ok(result);
     }
 
     [HttpPost]
-    public ActionResult<PersonDTO> Post([FromBody] PersonDTO entity)
+    public ActionResult<PersonDTO> Post([FromBody] Person entity)
     {
-        throw new NotImplementedException();
+        Person? result = null;
+        try {
+            result = this._repository.Add(entity);
+        } catch (Exception ex) {
+            return Problem(ex.Message);
+        }
+        //TODO: map DTO to Model
+        return Ok(result);
     }
 
     [HttpDelete("{id}")]
-    public ActionResult<bool> Delete([FromQuery] int id)
+    public ActionResult<bool> Delete([FromRoute] int id)
     {
-        return Ok(this._repository.Delete(new Person{ ID = id }));
+        return this._repository.Delete(new Person{ ID = id});
     }
 }
