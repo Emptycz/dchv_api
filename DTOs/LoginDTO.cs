@@ -6,4 +6,5 @@ namespace dchv_api.DTOs
         public string Username { get; set; }
         public DateTime? Verified_at { get; set; }
     }
+
 }
