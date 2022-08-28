@@ -1,12 +1,33 @@
 using dchv_api.Models;
+using dchv_api.Database;
 
 namespace dchv_api.DataRepositories.Implementations
 {
     public class LoginRepository : ILoginRepository
     {
+        private readonly DatabaseContext _context;
+        private readonly ILogger<LoginRepository> _logger;
+        public LoginRepository(ILogger<LoginRepository> logger, DatabaseContext dbContext)
+        {
+            _logger = logger;
+            _context = dbContext;
+        }
         public Login Add(Login entity)
         {
-            throw new NotImplementedException();
+            _context.Add(entity);
+            _context.SaveChanges();
+            return _context.Logins.Where(
+                (x) => x.ID == entity.ID && x.Deleted_at == null
+            ).Single();
+        }
+
+        public Login? LoginUser(Login entity)
+        {
+            return _context.Logins.Where((x) => 
+                x.Username == entity.Username &&
+                x.Password == entity.Password &&
+                x.Deleted_at == null
+            ).SingleOrDefault();
         }
 
         public Task<Login> AddAsync(Login entity)
@@ -14,14 +35,16 @@ namespace dchv_api.DataRepositories.Implementations
             throw new NotImplementedException();
         }
 
-        public Login Get(Login entity)
+        public Login? Get(Login entity)
         {
-            throw new NotImplementedException();
+            return _context.Logins.Where(
+                (x) => x.ID == entity.ID && x.Deleted_at == null
+            ).SingleOrDefault();
         }
 
-        public IEnumerable<Login> GetAll()
+        public IEnumerable<Login>? GetAll()
         {
-            throw new NotImplementedException();
+            return _context.Logins.Where((x) => x.Deleted_at == null);
         }
 
         public Task<IEnumerable<Login>> GetAllAsync()
@@ -36,7 +59,11 @@ namespace dchv_api.DataRepositories.Implementations
 
         public bool Delete(Login entity)
         {
-            throw new NotImplementedException();
+            entity = this.Get(entity);
+            if (entity is null) return false;
+            entity.Deleted_at = DateTime.UtcNow;
+            _context.Update<Login>(entity);
+            return _context.SaveChanges() > 0 ? true : false;
         }
 
         public Task<bool> DeleteAsync(Login entity)
