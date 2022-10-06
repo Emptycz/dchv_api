@@ -1,13 +1,15 @@
-namespace dchv_api.DTOs 
+using dchv_api.Models;
+
+namespace dchv_api.DTOs;
+
+public class PersonDTO : BaseDTO
 {
-    public class PersonDTO : BaseDTO
-    {
-        public int ID { get; set; }
-        public int LoginID { get; set; }
-        public string Firstname { get; set; }
-        public string Lastname { get; set; }
-        public string Email { get; set; }
-        public virtual IEnumerable<RoleDTO> Roles { get; set; }
-        public virtual IEnumerable<ContactDTO> Contacts { get; set; }
-    }
+    public uint ID { get; set; }
+    public uint LoginID { get; set; }
+    public string Firstname { get; set; } = String.Empty;
+    public string Lastname { get; set; } = String.Empty;
+
+    public IEnumerable<RoleDTO>? Roles { get; set; }
+    public IEnumerable<ContactDTO>? Contacts { get; set; }
+
 }

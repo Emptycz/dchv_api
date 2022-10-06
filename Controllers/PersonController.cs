@@ -9,11 +9,10 @@ namespace dchv_api.Controllers;
 [Authorize]
 [ApiController]
 [Route("[controller]")]
-public class PersonController : ControllerBase
+public class PersonController : BaseController
 {
     private readonly IPersonRepository _repository;
     private readonly ILogger<PersonController> _logger;
-
     public PersonController(ILogger<PersonController> logger, IPersonRepository repository)
     {
         _logger = logger;
@@ -21,7 +20,7 @@ public class PersonController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public ActionResult<PersonDTO> Get([FromRoute] int id)
+    public ActionResult<PersonDTO> Get([FromRoute] uint id)
     {
         Person? data = this._repository.Get(new Person{ ID = id });
         if (data is null) return NotFound();
@@ -39,12 +38,17 @@ public class PersonController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<PersonDTO> Post([FromBody] Person entity)
+    public ActionResult<PersonDTO> Post([FromBody] PersonDTO entity)
     {
         Person? result = null;
         try {
-            result = this._repository.Add(entity);
+            result = this._repository.Add(new Person{
+                Firstname = entity.Firstname,
+                Lastname = entity.Lastname,
+                LoginID = getLoginId().Value
+            });
         } catch (Exception ex) {
+            _logger.LogError(ex.Message);
             return Problem(ex.Message);
         }
         //TODO: map DTO to Model
@@ -52,7 +56,7 @@ public class PersonController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public ActionResult<bool> Delete([FromRoute] int id)
+    public ActionResult<bool> Delete([FromRoute] uint id)
     {
         return this._repository.Delete(new Person{ ID = id});
     }

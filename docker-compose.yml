@@ -1,0 +1,12 @@
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql
+    hostname: mssql
+    restart: always
+    environment:
+      - SA_PASSWORD=${DB_PASS}
+      - ACCEPT_EULA=Y
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"

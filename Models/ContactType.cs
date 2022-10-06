@@ -1,8 +1,10 @@
-namespace dchv_api.Models
+using System.ComponentModel.DataAnnotations;
+
+namespace dchv_api.Models;
+
+public class ContactType : BaseModel
 {
-    public class ContactType : BaseModel
-    {
-        public int ID { get; set; }
-        public string Name { get; set; }
-    }
+    [Key]
+    public uint ID { get; set; }
+    public string Name { get; set; }
 }

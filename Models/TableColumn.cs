@@ -1,10 +1,9 @@
-namespace dchv_api.Models
+namespace dchv_api.Models;
+
+public class TableColumn : BaseModel
 {
-    public class TableColumn : BaseModel
-    {
-        public int ID { get; set; }
-        public int Position { get; set; }
-        public string Name { get; set; }
-        public virtual ICollection<TableData>? Values { get; set; } = new List<TableData>();
-    }
+    public uint ID { get; set; }
+    public int Position { get; set; }
+    public string Name { get; set; }
+    public virtual ICollection<TableData>? Values { get; set; } = new List<TableData>();
 }

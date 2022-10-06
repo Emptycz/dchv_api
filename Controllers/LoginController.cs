@@ -8,45 +8,46 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace dchv_api.Controllers;
 
-[Authorize]
 [ApiController]
 [Route("[controller]")]
-public class LoginController : ControllerBase
+public class LoginController : BaseController
 {
     private readonly ILoginRepository _repository;
     private readonly ILogger<LoginController> _logger;
-    
-    // TODO: Change this into static abstract function (accepting <T, R>)
-    private static readonly MapperConfiguration _mapperConfig = new MapperConfiguration(cfg => cfg.CreateMap<Login, LoginDTO>());
-    // TODO: Change this into service
-    private Mapper _mapper;
-    public LoginController(ILogger<LoginController> logger, ILoginRepository repository)
+    private readonly IMapper _mapper;
+    public LoginController(
+        ILogger<LoginController> logger,
+        ILoginRepository repository,
+        IMapper mapper
+    )
     {
         _logger = logger;
         _repository = repository;
-        _mapper = new Mapper(_mapperConfig);
+        _mapper = mapper;
     }
 
+    [Authorize]
     [HttpGet("{id}")]
-    public ActionResult<LoginDTO> Get([FromRoute] int id)
+    public ActionResult<LoginDTO> Get([FromRoute] uint id)
     {
         Login? data = this._repository.Get(new Login{ ID = id });
         if (data is null) return NotFound();
         return Ok(_mapper.Map<Login, LoginDTO>(data));
     }
 
+    [Authorize]
     [HttpGet]
     public ActionResult<IEnumerable<LoginDTO>> Get()
     {
         IEnumerable<Login>? result = _repository.GetAll();
         if (result is null || result.Count() == 0) return NoContent();
-        //TODO: map IEnumerable<Model> to DTO
-        return Ok(result);
+        return Ok(_mapper.Map<IEnumerable<Login>, IEnumerable<LoginDTO>>(result));
     }
     
     [HttpPost]
     public ActionResult<LoginDTO> Post([FromBody] Login data)
     {
+        // TODO: We need to check if `username` is in email format
         data.Password = CryptographyManager.SHA256(data.Password);
         Login? result = null;
         try {
@@ -61,9 +62,11 @@ public class LoginController : ControllerBase
         return Ok(_mapper.Map<Login, LoginDTO>(result));
     }
 
+    [Authorize]
     [HttpDelete("{id}")]
-    public ActionResult<bool> Delete([FromRoute] int id)
+    public ActionResult<bool> Delete([FromRoute] uint id)
     {
+        if (id == 0) return BadRequest();
         return this._repository.Delete(new Login{ ID = id});
     }
 }
