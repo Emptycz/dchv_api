@@ -4,6 +4,6 @@ public class TableColumn : BaseModel
 {
     public uint ID { get; set; }
     public int Position { get; set; }
-    public string Name { get; set; }
+    public string Name { get; set; } = String.Empty;
     public virtual ICollection<TableData>? Values { get; set; } = new List<TableData>();
 }

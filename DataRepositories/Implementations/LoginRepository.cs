@@ -29,9 +29,9 @@ public class LoginRepository : ILoginRepository
     {
         return _context.Logins
             .Include(login => login.Persons)
-            .ThenInclude((person) => person.Roles)
+            // .ThenInclude((person) => person.Roles)
             .AsSplitQuery()
-            .Where((x) => 
+            .Where((x) =>
                 x.Username == entity.Username &&
                 x.Password == entity.Password &&
                 x.Deleted_at == null

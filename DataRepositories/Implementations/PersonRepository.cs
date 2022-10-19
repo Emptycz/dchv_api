@@ -56,7 +56,7 @@ public class PersonRepository : IPersonRepository
         if (entity is null) return false;
         entity.Deleted_at = DateTime.UtcNow;
         _context.Update<Person>(entity);
-        return _context.SaveChanges() > 0 ? true : false;        
+        return _context.SaveChanges() > 0 ? true : false;
     }
 
     public Task<bool> DeleteAsync(Person entity)

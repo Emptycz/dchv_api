@@ -4,11 +4,14 @@ using dchv_api.FileHandlers;
 using dchv_api.Factories;
 using dchv_api.DataRepositories;
 using dchv_api.Services;
-using System.Text.Json;
+using dchv_api.DTOs;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace dchv_api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("[controller]")]
 public class RecordController : BaseController
 {
@@ -17,28 +20,45 @@ public class RecordController : BaseController
     private readonly IRecordRepository _repository;
     private readonly ILogger _logger;
     private readonly AuthManager _authManager;
+    private readonly IMapper _mapper;
 
     public RecordController(
         ILogger<RecordController> logger,
         IRecordRepository repo,
-        AuthManager auth
+        AuthManager auth,
+        IMapper mapper
     )
     {
         _authManager = auth;
         _logger = logger;
         _repository = repo;
         _fileHandlerProviderFactory = new FileHandlerProviderFactory();
+        _mapper = mapper;
+    }
+
+    [HttpGet]
+    public ActionResult<IEnumerable<RecordDTO>> Get()
+    {
+        return _mapper.Map<List<RecordDTO>>(_repository.GetAll());
+    }
+
+    [HttpGet("{id}")]
+    public ActionResult<RecordDTO> Get([FromRoute] uint id)
+    {
+        Record? data = this._repository.Get(new Record{ ID = id });
+        if (data is null) return NotFound();
+        return Ok(_mapper.Map<RecordDTO>(data));
     }
 
     [HttpPost]
-    public async Task<ActionResult<Record>> Post(IFormFile file)
+    public async Task<ActionResult<RecordDTO>> Post(IFormFile file)
     {
         if (file is null) return BadRequest("file: is a required property");
 
         string fileName = Guid.NewGuid().ToString();
         string path = Path.Combine(Directory.GetCurrentDirectory() + "/Temp/UploadedFiles/", fileName.ToString());
         string extension = Path.GetExtension(file.FileName);
-        
+
         try {
             using (FileStream fs = new FileStream(path.ToString(), FileMode.CreateNew)) {
                 await file.CopyToAsync(fs);
@@ -62,9 +82,9 @@ public class RecordController : BaseController
             return Problem("Server was unable to process the file");
         }
 
-        // Delete the physical file from API  
+        // Delete the physical file from API
         try {
-            System.IO.File.Delete(path); 
+            System.IO.File.Delete(path);
         } catch (Exception ex) {
             _logger.LogError(ex.Message);
             return Problem("Server was unable to remove the file.");
@@ -79,22 +99,10 @@ public class RecordController : BaseController
             return Unauthorized("User is not logged in");
         }
 
-        List<TableColumn>? cols = data.Columns?.Where(
-            (x) => x.Name is null || x.Name == String.Empty
-        ).ToList();
-
-        if (cols is not null) {
-            foreach(TableColumn col in cols)
-            {
-                _logger.LogDebug("Removing col with name {0}", col.Name);
-                data.Columns?.Remove(col);
-            }
-        }
-        // TODO: Save the data to database
-        Record response;
+        RecordDTO response = new RecordDTO();
         try {
-            response = this._repository.Add(data);
-        } catch (JsonException ex)
+            response = _mapper.Map<RecordDTO>(this._repository.Add(data));
+        } catch (Exception ex)
         {
             _logger.LogError(ex.Message);
             return Problem("Server was unable to insert all data into database");

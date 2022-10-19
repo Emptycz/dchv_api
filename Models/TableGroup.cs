@@ -10,8 +10,8 @@ public class TableGroup : BaseModel
     public string? Name { get; set; }
     // [Range(1, int.MaxValue)]
     // public int AuthorID { get; set; }
-    
+
     // [ForeignKey("AuthorID")]
     // public virtual Person? Author { get; set; }
-    public virtual ICollection<Record>? Tables { get; set; }
+    public virtual ICollection<Record>? Records { get; set; }
 }

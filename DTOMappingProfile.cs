@@ -10,5 +10,7 @@ public class DTOMappingProfile : Profile
         CreateMap<Role, RoleDTO>();
         CreateMap<Login, LoginDTO>();
         CreateMap<Person, PersonDTO>();
+        CreateMap<Record, RecordDTO>();
+        CreateMap<RecordData, RecordDataDTO>();
     }
 }

@@ -6,5 +6,5 @@ public class ContactType : BaseModel
 {
     [Key]
     public uint ID { get; set; }
-    public string Name { get; set; }
+    public string Name { get; set; } = String.Empty;
 }

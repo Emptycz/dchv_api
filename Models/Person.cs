@@ -1,6 +1,4 @@
-using System.Text;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
 
 namespace dchv_api.Models;
 

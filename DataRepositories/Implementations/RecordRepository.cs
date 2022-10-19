@@ -1,5 +1,6 @@
 using dchv_api.Database;
 using dchv_api.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace dchv_api.DataRepositories.Implementations
 {
@@ -47,12 +48,18 @@ namespace dchv_api.DataRepositories.Implementations
     {
       return _context.Records.Where(
         (x) => x.ID == entity.ID && x.Deleted_at == null
-      ).SingleOrDefault();
+      )
+      .Include(record => record.Author)
+      .Include(record => record.Data)
+      .SingleOrDefault();
     }
 
     public IEnumerable<Record>? GetAll()
     {
-      return _context.Records.Where((x) => x.Deleted_at == null);
+      return _context.Records
+        .Where((x) => x.Deleted_at == null)
+        .Include(record => record.Author)
+        .OrderByDescending((x) => x.ID);
     }
 
     public Task<IEnumerable<Record>>? GetAllAsync()
