@@ -33,7 +33,7 @@ public class RoleController : BaseController
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<RoleDTO>> Get() 
+    public ActionResult<IEnumerable<RoleDTO>> Get()
     {
         IEnumerable<Role>? result = _repository.GetAll();
         if (result is null) return NoContent();
@@ -41,7 +41,7 @@ public class RoleController : BaseController
     }
 
     [HttpGet("{id}")]
-    public ActionResult<RoleDTO> Get(int id) 
+    public ActionResult<RoleDTO> Get(int id)
     {
         Role? result = (_repository.Get(new Role{ID = id}));
         if (result is null) return NotFound();
@@ -53,7 +53,7 @@ public class RoleController : BaseController
     {
         Role result;
 
-        role.AuthorID = _authManager.GetPersonID(getLoginId().Value);
+        role.PersonID = _authManager.GetPersonID(getLoginId().Value);
         try {
             result = _repository.Add(_mapper.Map<RoleDTO, Role>(role));
         } catch (Exception ex)

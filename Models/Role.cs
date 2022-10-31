@@ -7,9 +7,9 @@ public class Role : BaseModel
     public string Name { get; set; } = String.Empty;
     public string? DisplayName { get; set; }
 
-    public uint AuthorID { get; set; }
+    public uint PersonID { get; set; }
 
-    [ForeignKey("AuthorID")]
-    public virtual Person? Author { get; set; }
+    [ForeignKey("PersonID")]
+    public virtual Person? Person { get; set; }
     // public virtual ICollection<Person>? Persons { get; set; }
 }
