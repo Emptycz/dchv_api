@@ -92,7 +92,7 @@ public class RecordController : BaseController
 
         data.Name = file.FileName;
         try {
-            data.AuthorID = _authManager.GetPersonID(getLoginId().Value);
+            data.PersonID = _authManager.GetPersonID(getLoginId().Value);
         } catch (Exception ex)
         {
             _logger.LogError(ex.Message);

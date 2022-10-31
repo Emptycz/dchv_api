@@ -49,7 +49,7 @@ namespace dchv_api.DataRepositories.Implementations
       return _context.Records.Where(
         (x) => x.ID == entity.ID && x.Deleted_at == null
       )
-      .Include(record => record.Author)
+      .Include(record => record.Person)
       .Include(record => record.Data)
       .SingleOrDefault();
     }
@@ -58,7 +58,7 @@ namespace dchv_api.DataRepositories.Implementations
     {
       return _context.Records
         .Where((x) => x.Deleted_at == null)
-        .Include(record => record.Author)
+        .Include(record => record.Person)
         .OrderByDescending((x) => x.ID);
     }
 
