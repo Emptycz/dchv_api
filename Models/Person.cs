@@ -11,6 +11,7 @@ public class Person : BaseModel
 
     [ForeignKey("LoginID")]
     public virtual Login? Login { get; set; }
-    public virtual IEnumerable<Role>? Roles { get; set; }
-    public virtual IEnumerable<Contact>? Contacts { get; set; }
+    public virtual ICollection<Role>? Roles { get; set; }
+    public virtual ICollection<Contact>? Contacts { get; set; }
+    public virtual ICollection<PersonGroupRelations>? PersonGroups { get; set; }
 }
