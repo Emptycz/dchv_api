@@ -1,3 +1,4 @@
+using System.Security.Permissions;
 using dchv_api.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +21,7 @@ public class DatabaseContext : DbContext
     public DbSet<TableColumn> TableColumns { get; set; }
     public DbSet<TableData> TableDatas { get; set; }
     public DbSet<TableGroup> TableGroups { get; set; }
+    public DbSet<PersonGroup> PersonGroups { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -34,10 +36,27 @@ public class DatabaseContext : DbContext
 
         // Set Unique constraints
         modelBuilder.Entity<Login>().HasIndex((x) => x.Username).IsUnique();
-        modelBuilder.Entity<PersonGroup>().HasIndex((x) => new { x.Name, x.AuthorID }).IsUnique();
+        modelBuilder.Entity<PersonGroup>().HasIndex((x) => new { x.Name, x.PersonID }).IsUnique();
         modelBuilder.Entity<Contact>().HasIndex((x) => new { x.ContactTypeID, x.PersonID, x.Value }).IsUnique();
         modelBuilder.Entity<ContactType>().HasIndex((x) => x.Name).IsUnique();
         modelBuilder.Entity<TableColumn>().HasIndex((x) => x.Name).IsUnique();
+
+        modelBuilder.Entity<PersonGroupRelations>()
+            .HasKey((x) => new { x.PersonID, x.PersonGroupID });
+        modelBuilder.Entity<PersonGroupRelations>()
+            .ToTable("person_group_relations");
+
+        modelBuilder.Entity<PersonGroupRelations>()
+            .HasOne(x => x.Person)
+            .WithMany(x => x.PersonGroups)
+            .HasForeignKey(x => x.PersonID)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<PersonGroupRelations>()
+            .HasOne(x => x.Group)
+            .WithMany(x => x.Members)
+            .HasForeignKey(x => x.PersonGroupID)
+            .OnDelete(DeleteBehavior.NoAction);
 
         base.OnModelCreating(modelBuilder);
     }

@@ -23,6 +23,7 @@ builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<IRecordRepository, RecordRepository>();
 builder.Services.AddScoped<ITableColumnRepository, TableColumnRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IPersonGroupRepository, PersonGroupRepository>();
 
 builder.Services.AddScoped<JwtManager>();
 builder.Services.AddScoped<AuthManager>();

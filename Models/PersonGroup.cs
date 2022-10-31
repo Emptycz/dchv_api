@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace dchv_api.Models;
@@ -9,9 +8,9 @@ public class PersonGroup : BaseModel
     public string Name { get; set; } = String.Empty;
     public string? DisplayName { get; set; }
 
-    public uint AuthorID { get; set; }
+    public uint PersonID { get; set; }
 
-    [ForeignKey("AuthorID")]
-    public Person? Author { get; set; }
-    public virtual ICollection<Person>? Members { get; set; }
+    [ForeignKey("PersonID")]
+    public virtual Person? Person { get; set; }
+    public virtual ICollection<PersonGroupRelations>? Members { get; set; }
 }

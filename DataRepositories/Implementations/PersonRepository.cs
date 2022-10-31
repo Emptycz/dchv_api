@@ -19,12 +19,9 @@ public class PersonRepository : IPersonRepository
     {
         _context.Add(entity);
         _context.SaveChanges();
-        return this.Get(entity);
-    }
-
-    public Task<Person> AddAsync(Person entity)
-    {
-        throw new NotImplementedException();
+        Person? res = this.Get(entity);
+        if (!(res is null)) return res;
+        throw new InvalidDataException("New person record was not created");
     }
 
     public Person? Get(Person entity)
