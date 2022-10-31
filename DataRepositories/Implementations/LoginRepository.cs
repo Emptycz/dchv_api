@@ -27,7 +27,7 @@ public class LoginRepository : ILoginRepository
 
     public Login? LoginUser(Login entity)
     {
-        return _context.Logins
+       return _context.Logins
             .Include(login => login.Persons)
             // .ThenInclude((person) => person.Roles)
             .AsSplitQuery()
@@ -35,7 +35,7 @@ public class LoginRepository : ILoginRepository
                 x.Username == entity.Username &&
                 x.Password == entity.Password &&
                 x.Deleted_at == null
-            ).ToList()[0];
+            ).SingleOrDefault();
     }
 
     public Task<Login> AddAsync(Login entity)

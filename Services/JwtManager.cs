@@ -5,7 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 
 namespace dchv_api.Services;
 
-public sealed class JwtManager 
+public sealed class JwtManager
 {
     private readonly ILogger<JwtManager> _logger;
     private readonly IConfiguration _configuration ;
@@ -36,7 +36,7 @@ public sealed class JwtManager
             jwt.Issuer,
             jwt.Audience,
             claims,
-            expires: DateTime.Now.AddHours(2),
+            expires: DateTime.Now.AddDays(1),
             signingCredentials: signIn
         );
         return token;
@@ -49,5 +49,5 @@ internal sealed class Jwt
     public string Issuer { get; set; } = String.Empty;
     public string Audience { get; set; } = String.Empty;
     public string Subject { get; set; } = String.Empty;
-} 
+}
 
