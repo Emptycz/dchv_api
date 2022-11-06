@@ -43,10 +43,13 @@ public class LoginController : BaseController
         if (result is null || result.Count() == 0) return NoContent();
         return Ok(_mapper.Map<IEnumerable<Login>, IEnumerable<LoginDTO>>(result));
     }
-    
+
     [HttpPost]
     public ActionResult<LoginDTO> Post([FromBody] Login data)
     {
+        if (data.Password is null || data.Username is null) {
+            return BadRequest();
+        }
         // TODO: We need to check if `username` is in email format
         data.Password = CryptographyManager.SHA256(data.Password);
         Login? result = null;
