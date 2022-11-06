@@ -22,6 +22,8 @@ public class RecordController : BaseController
     private readonly AuthManager _authManager;
     private readonly IMapper _mapper;
 
+    private readonly string _tempDir = "/Temp/UploadedFiles";
+
     public RecordController(
         ILogger<RecordController> logger,
         IRecordRepository repo,
@@ -34,6 +36,8 @@ public class RecordController : BaseController
         _repository = repo;
         _fileHandlerProviderFactory = new FileHandlerProviderFactory();
         _mapper = mapper;
+
+        prepareTempDirectory();
     }
 
     [HttpGet]
@@ -109,5 +113,26 @@ public class RecordController : BaseController
         }
         if (response is null || response.ID == 0) return Problem("Je to špatné");
         return Ok(response);
+    }
+
+    private bool prepareTempDirectory()
+    {
+        // FIXME: Probably does not work, this also should be separate fn
+        //        that should be triggered upon app start, so move it into
+        //        program.cs
+        if (Directory.Exists(Directory.GetCurrentDirectory() + this._tempDir)) {
+            _logger.LogDebug("Dir {0} exists", this._tempDir);
+            return true;
+        }
+
+        try
+        {
+            Directory.CreateDirectory(this._tempDir);
+            return true;
+        } catch (Exception ex)
+        {
+            _logger.LogCritical(ex.Message);
+            return false;
+        }
     }
 }
