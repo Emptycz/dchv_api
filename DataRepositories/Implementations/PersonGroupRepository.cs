@@ -6,11 +6,11 @@ namespace dchv_api.DataRepositories.Implementations;
 
 public class PersonGroupRepository : IPersonGroupRepository
 {
-    private readonly DatabaseContext _context;
+    private readonly BaseDbContext _context;
     private readonly ILogger<PersonGroupRepository> _logger;
     public PersonGroupRepository(
         ILogger<PersonGroupRepository> logger,
-        DatabaseContext dbContext
+        BaseDbContext dbContext
     )
     {
         _logger = logger;
@@ -28,7 +28,7 @@ public class PersonGroupRepository : IPersonGroupRepository
 
     public bool Delete(PersonGroup entity)
     {
-        entity = this.Get(entity);
+        entity = this.Get(entity)!;
         if (entity is null) return false;
         entity.Deleted_at = DateTime.UtcNow;
         _context.Update<PersonGroup>(entity);

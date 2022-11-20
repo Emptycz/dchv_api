@@ -5,10 +5,10 @@ namespace dchv_api.DataRepositories.Implementations;
 
 public class RoleRepository : IRoleRepository
 {
-    private readonly DatabaseContext _context;
+    private readonly BaseDbContext _context;
     private readonly ILogger<RecordRepository> _logger;
 
-    public RoleRepository(ILogger<RecordRepository> logger, DatabaseContext dbContext)
+    public RoleRepository(ILogger<RecordRepository> logger, BaseDbContext dbContext)
     {
         _logger = logger;
         _context = dbContext;
@@ -39,9 +39,9 @@ public class RoleRepository : IRoleRepository
     }
 
     public Role? Get(Role entity)
-    {   
-        return _context.Roles.Where((x) => 
-            x.ID == entity.ID 
+    {
+        return _context.Roles.Where((x) =>
+            x.ID == entity.ID
             && x.Deleted_at == null
         ).SingleOrDefault();
     }

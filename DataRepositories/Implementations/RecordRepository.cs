@@ -6,10 +6,10 @@ namespace dchv_api.DataRepositories.Implementations
 {
   public class RecordRepository : IRecordRepository
   {
-    private readonly DatabaseContext _context;
+    private readonly BaseDbContext _context;
     private readonly ILogger<RecordRepository> _logger;
 
-    public RecordRepository(ILogger<RecordRepository> logger, DatabaseContext dbContext)
+    public RecordRepository(ILogger<RecordRepository> logger, BaseDbContext dbContext)
     {
         _logger = logger;
         _context = dbContext;
@@ -22,7 +22,7 @@ namespace dchv_api.DataRepositories.Implementations
       // https://entityframeworkcore.com/saving-data-bulk-insert
       _context.Add(entity);
       _context.SaveChanges();
-      return this.Get(entity);
+      return this.Get(entity)!;
     }
 
     public async Task<Record> AddAsync(Record entity)

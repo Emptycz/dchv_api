@@ -8,10 +8,10 @@ namespace dchv_api.DataRepositories.Implementations;
 
 public class LoginRepository : ILoginRepository
 {
-    private readonly DatabaseContext _context;
+    private readonly BaseDbContext _context;
     private readonly ILogger<LoginRepository> _logger;
 
-    public LoginRepository(ILogger<LoginRepository> logger, DatabaseContext dbContext)
+    public LoginRepository(ILogger<LoginRepository> logger, BaseDbContext dbContext)
     {
         _logger = logger;
         _context = dbContext;
@@ -28,8 +28,8 @@ public class LoginRepository : ILoginRepository
     public Login? LoginUser(Login entity)
     {
        return _context.Logins
-            .Include(login => login.Persons)
-            // .ThenInclude((person) => person.Roles)
+            ?.Include(login => login.Persons)
+            ?.ThenInclude((person) => person.Roles)
             .AsSplitQuery()
             .Where((x) =>
                 x.Username == entity.Username &&
@@ -45,14 +45,24 @@ public class LoginRepository : ILoginRepository
 
     public Login? Get(Login entity)
     {
-        return _context.Logins.Where(
-            (x) => x.ID == entity.ID && x.Deleted_at == null
-        ).SingleOrDefault();
+        return _context.Logins
+            ?.Include(login => login.Persons)
+            ?.ThenInclude((person) => person.Roles)
+            ?.Include(login => login.Persons)
+            ?.ThenInclude((person) => person.Contacts)
+            .AsSplitQuery()
+            .Where(
+                (x) => x.ID == entity.ID && x.Deleted_at == null
+            ).SingleOrDefault();
     }
 
     public IEnumerable<Login>? GetAll()
     {
-        return _context.Logins.Where((x) => x.Deleted_at == null);
+        return _context.Logins
+            ?.Include(login => login.Persons)
+            ?.ThenInclude((person) => person.Roles)
+            .AsSplitQuery()
+            .Where((x) => x.Deleted_at == null);
     }
 
     public Task<IEnumerable<Login>> GetAllAsync()
@@ -67,7 +77,7 @@ public class LoginRepository : ILoginRepository
 
     public bool Delete(Login entity)
     {
-        entity = this.Get(entity);
+        entity = this.Get(entity)!;
         if (entity is null) return false;
         entity.Deleted_at = DateTime.UtcNow;
         _context.Update<Login>(entity);

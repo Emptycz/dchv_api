@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace dchv_api.Database;
 
-public class DatabaseContext : DbContext
+public class BaseDbContext : DbContext
 {
-    public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
+    public BaseDbContext(DbContextOptions<BaseDbContext> options) : base(options)
     {
     }
 
@@ -60,4 +60,5 @@ public class DatabaseContext : DbContext
 
         base.OnModelCreating(modelBuilder);
     }
+
 }

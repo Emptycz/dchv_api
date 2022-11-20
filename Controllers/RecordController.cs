@@ -121,7 +121,6 @@ public class RecordController : BaseController
         //        that should be triggered upon app start, so move it into
         //        program.cs
         if (Directory.Exists(Directory.GetCurrentDirectory() + this._tempDir)) {
-            _logger.LogDebug("Dir {0} exists", this._tempDir);
             return true;
         }
 
