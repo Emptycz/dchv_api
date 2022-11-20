@@ -9,5 +9,5 @@ public class Login : BaseModel {
     public string Password { get; set; } = String.Empty;
     public DateTime? Verified_at { get; set; }
 
-    public virtual IEnumerable<Person>? Persons { get; set; }
+    public virtual ICollection<Person>? Persons { get; set; }
 }
