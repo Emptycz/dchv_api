@@ -23,10 +23,11 @@ public sealed class JwtManager
         {
             new Claim(JwtRegisteredClaimNames.Sub, jwt.Subject),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            // new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+            new Claim(ClaimTypes.Role, user.Persons?.FirstOrDefault()?.Roles?.FirstOrDefault()?.Name ?? ""),
             new Claim(ClaimTypes.Name, user.Username),
             new Claim(ClaimTypes.Sid, user.ID.ToString()),
             new Claim(ClaimTypes.PrimarySid, user?.Persons?.FirstOrDefault()?.ID.ToString() ?? ""),
+            // new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
         };
         SymmetricSecurityKey key = new SymmetricSecurityKey(
             System.Text.Encoding.UTF8.GetBytes(jwt.Key)
