@@ -1,3 +1,4 @@
+using System.Text;
 using dchv_api.Database;
 using dchv_api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -54,9 +55,17 @@ namespace dchv_api.DataRepositories.Implementations
       .SingleOrDefault();
     }
 
-    public IEnumerable<Record>? GetAll()
+    public IEnumerable<Record>? GetAll() => throw new NotImplementedException();
+
+    public IEnumerable<Record>? GetAll(Record filter)
     {
-      return _context.Records
+      var ctx = _context.Records.AsQueryable();
+
+      if (!String.IsNullOrEmpty(filter.Name)) {
+        ctx = ctx.Where((x) => x.Name.Contains(filter.Name));
+      }
+
+      return ctx
         .Where((x) => x.Deleted_at == null)
         .Include(record => record.Person)
         .OrderByDescending((x) => x.ID);

@@ -41,9 +41,11 @@ public class RecordController : BaseController
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<RecordDTO>> Get()
+    public ActionResult<IEnumerable<RecordDTO>> Get([FromQuery] RecordDTO filter)
     {
-        return _mapper.Map<List<RecordDTO>>(_repository.GetAll());
+        IEnumerable<Record>? data = this._repository.GetAll(_mapper.Map<Record>(filter));
+        if (data?.Count() == 0) return NotFound();
+        return _mapper.Map<List<RecordDTO>>(data);
     }
 
     [HttpGet("{id}")]
