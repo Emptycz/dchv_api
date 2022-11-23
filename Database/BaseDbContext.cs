@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Security.Permissions;
 using dchv_api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -23,17 +24,14 @@ public class BaseDbContext : DbContext
     public DbSet<TableGroup> TableGroups { get; set; }
     public DbSet<PersonGroup> PersonGroups { get; set; }
 
+    // FIXME: Run this only when debuging (Development run)
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder
+            .LogTo(Console.WriteLine, LogLevel.Information)
+            .EnableDetailedErrors();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // NOTE: Probably remove these, because the N:M auto-generated tables are not
-        // having this name convention anyway
-        modelBuilder.Entity<ContactType>().ToTable("contact_type");
-        modelBuilder.Entity<Contact>().ToTable("contact");
-        modelBuilder.Entity<Login>().ToTable("login");
-        modelBuilder.Entity<Role>().ToTable("role");
-        modelBuilder.Entity<Person>().ToTable("person");
-        modelBuilder.Entity<PersonGroup>().ToTable("person_group");
-
         // Set Unique constraints
         modelBuilder.Entity<Login>().HasIndex((x) => x.Username).IsUnique();
         modelBuilder.Entity<PersonGroup>().HasIndex((x) => new { x.Name, x.PersonID }).IsUnique();
@@ -45,6 +43,9 @@ public class BaseDbContext : DbContext
             .HasKey((x) => new { x.PersonID, x.PersonGroupID });
         modelBuilder.Entity<PersonGroupRelations>()
             .ToTable("person_group_relations");
+
+        modelBuilder.Entity<Record>()
+            .Property((x) => x.Name).HasColumnName("Name").IsUnicode(true);
 
         modelBuilder.Entity<PersonGroupRelations>()
             .HasOne(x => x.Person)

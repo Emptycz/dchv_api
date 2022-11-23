@@ -79,7 +79,7 @@ internal class Program
       app.UseSwagger();
       app.UseSwaggerUI();
 
-      app.Logger.LogDebug("arg[0] {0}", args[0]);
+      if (args.Length != 0) app.Logger.LogDebug("arg[0] {0}", args[0]);
       DatabaseSeedManager.MigrateUp(app);
       if (args.Contains("--sample")) DatabaseSeedManager.MigrateSampleSeed(app);
     }
