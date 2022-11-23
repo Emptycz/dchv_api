@@ -1,9 +1,8 @@
 using dchv_api.Models;
 
-namespace dchv_api.DataRepositories
+namespace dchv_api.DataRepositories;
+
+public interface ILoginRepository : IBaseRepository<Login>
 {
-    public interface ILoginRepository : IBaseRepository<Login>
-    {
-        Login? LoginUser(Login entity);
-    }
+    Login? LoginUser(Login entity);
 }

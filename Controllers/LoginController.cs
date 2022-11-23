@@ -56,10 +56,10 @@ public class LoginController : BaseController
         try {
             result = this._repository.Add(data);
         } catch (Exception ex) {
-            _logger.LogDebug("test: {0}", ex.InnerException?.Message);
             if (ex.InnerException is not null && ex.InnerException.Message.Contains("duplicate key")) {
                 return Problem("This username is already taken");
             }
+            _logger.LogDebug(ex.InnerException?.Message);
             return Problem(ex.Message);
         }
         return Ok(_mapper.Map<Login, LoginDTO>(result));

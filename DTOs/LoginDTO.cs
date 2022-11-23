@@ -10,11 +10,5 @@ public class LoginDTO : BaseDTO
 
     public IEnumerable<PersonDTO>? Persons { get; set; }
 
-    
-    public class MapProfile:AutoMapper.Profile {
-        public MapProfile() {
-            CreateMap<Login, LoginDTO>();
-        }
-    }
 }
 
