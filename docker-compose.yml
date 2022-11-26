@@ -1,4 +1,11 @@
 services:
+  api:
+    depends_on:
+      - mssql
+    build: .
+    ports:
+      - "5122:80"
+      - "7122:443"
   mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: mssql
