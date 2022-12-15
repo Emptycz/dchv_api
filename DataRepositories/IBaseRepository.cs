@@ -7,6 +7,6 @@ public interface IBaseRepository<T>
     IEnumerable<T>? GetAll();
     Task<IEnumerable<T>>? GetAllAsync();
     T Add(T entity);
-    T Update(T entity);
+    T? Update(T entity);
     bool Delete(T entity);
 }

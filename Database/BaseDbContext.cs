@@ -19,6 +19,7 @@ public class BaseDbContext : DbContext
     public DbSet<ContactType> ContactTypes { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<Record> Records { get; set; }
+    public DbSet<RecordData> RecordDatas { get; set; }
     public DbSet<TableColumn> TableColumns { get; set; }
     public DbSet<TableData> TableDatas { get; set; }
     public DbSet<TableGroup> TableGroups { get; set; }
@@ -40,12 +41,12 @@ public class BaseDbContext : DbContext
         modelBuilder.Entity<TableColumn>().HasIndex((x) => x.Name).IsUnique();
 
         modelBuilder.Entity<PersonGroupRelations>()
-            .HasKey((x) => new { x.PersonID, x.PersonGroupID });
+            .HasKey((x) => x.ID);
         modelBuilder.Entity<PersonGroupRelations>()
-            .ToTable("person_group_relations");
+            .HasIndex((x) => new { x.PersonID, x.PersonGroupID, x.Deleted_at }).IsUnique();
 
         modelBuilder.Entity<Record>()
-            .Property((x) => x.Name).HasColumnName("Name").IsUnicode(true);
+            .Property(x => x.Name).HasColumnType("nvarchar(max)").IsUnicode();
 
         modelBuilder.Entity<PersonGroupRelations>()
             .HasOne(x => x.Person)

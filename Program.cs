@@ -21,6 +21,7 @@ internal class Program
     builder.Services.AddScoped<ITableColumnRepository, TableColumnRepository>();
     builder.Services.AddScoped<IRoleRepository, RoleRepository>();
     builder.Services.AddScoped<IPersonGroupRepository, PersonGroupRepository>();
+    builder.Services.AddScoped<IRecordDataRepository, RecordDataRepository>();
 
     builder.Services.AddScoped<JwtManager>();
     builder.Services.AddScoped<AuthManager>();
@@ -88,7 +89,7 @@ internal class Program
 
     app.UseCors(x => x.AllowAnyHeader()
         .AllowAnyMethod()
-        .WithOrigins("http://localhost:3000"));
+        .WithOrigins("http://localhost:3000", ""));
 
     app.UseAuthentication();
     app.UseAuthorization();
