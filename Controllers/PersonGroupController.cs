@@ -63,4 +63,27 @@ public class PersonGroupController : BaseController
         return Ok(_mapper.Map<PersonGroup, PersonGroupDTO>(result));
     }
 
+    [HttpDelete("{id}")]
+    public ActionResult<bool> Delete([FromRoute] uint id)
+    {
+        if (id == 0) return BadRequest();
+        return this._repository.Delete(new PersonGroup{ ID = id});
+    }
+
+    // [HttpPatch("{id}")]
+    // public ActionResult<PersonGroupDTO> Patch(uint id, [FromBody] PersonGroup data)
+    // {
+    //     data.PersonID = _authManager.GetPersonID(getLoginId().Value);
+    //     PersonGroup? result = null;
+    //     try
+    //     {
+    //         result = this._repository.Update(data);
+    //     } catch (Exception ex)
+    //     {
+    //         _logger.LogError(ex.Message);
+    //         return Problem(ex.Message);
+    //     }
+    //     return Ok(_mapper.Map<PersonGroup, PersonGroupDTO>(result));
+    // }
+
 }

@@ -30,7 +30,14 @@ public class PersonGroupRepository : IPersonGroupRepository
     {
         entity = this.Get(entity)!;
         if (entity is null) return false;
-        entity.Deleted_at = DateTime.UtcNow;
+        DateTime now = DateTime.UtcNow;
+        entity.Deleted_at = now;
+        if (entity.Members is not null) {
+            foreach (PersonGroupRelations rel in entity.Members)
+            {
+                rel.Deleted_at = now;
+            }
+        }
         _context.Update<PersonGroup>(entity);
         return _context.SaveChanges() > 0 ? true : false;
     }
@@ -63,8 +70,11 @@ public class PersonGroupRepository : IPersonGroupRepository
       throw new NotImplementedException();
     }
 
-    public PersonGroup Update(PersonGroup entity)
+    public PersonGroup? Update(PersonGroup entity)
     {
-      throw new NotImplementedException();
+        _context.Update(entity);
+        _context.SaveChanges();
+        return this.Get(entity);
     }
+
 }

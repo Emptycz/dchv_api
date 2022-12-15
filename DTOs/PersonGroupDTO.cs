@@ -8,6 +8,6 @@ public class PersonGroupDTO : BaseDTO
 
     public uint? PersonID { get; set; }
     public virtual PersonDTO? Person { get; set; }
-    public virtual ICollection<PersonDTO>? Members { get; set; }
+    public virtual ICollection<PersonGroupRelationsDTO>? Members { get; set; }
 
 }
