@@ -11,7 +11,7 @@ public class Record : BaseModel
     public string Name { get; set; } = String.Empty;
 
     [ForeignKey("PersonID")]
-    public Person? Person { get; set; }
+    public virtual Person? Person { get; set; } = null;
     public virtual ICollection<RecordData>? Data { get; set; }
     public virtual ICollection<TableGroup>? Group { get; set; }
 }

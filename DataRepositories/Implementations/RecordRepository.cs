@@ -21,18 +21,16 @@ namespace dchv_api.DataRepositories.Implementations
       // FIXME: This is slow as hell, instead of saving thousands of lines,
       // you should aim for bulk insert, which is insanely faster (like 1000ms -> 6ms faster)
       // https://entityframeworkcore.com/saving-data-bulk-insert
-      _context.Add(entity);
+      _context.Add<Record>(entity);
       _context.SaveChanges();
       return this.Get(entity)!;
     }
 
     public async Task<Record> AddAsync(Record entity)
     {
-      await _context.AddAsync(entity);
+      await _context.AddAsync<Record>(entity);
       await _context.SaveChangesAsync();
-      return _context.Records.Where(
-        (x) => x.ID == entity.ID && x.Deleted_at == null
-      ).Single();
+      return this.Get(entity)!;
     }
 
     public bool Delete(Record entity)
@@ -63,6 +61,13 @@ namespace dchv_api.DataRepositories.Implementations
 
       if (!String.IsNullOrEmpty(filter.Name)) {
         ctx = ctx.Where((x) => x.Name.Contains(filter.Name));
+      }
+
+      _logger.LogError("haf: {0}", filter.PersonID);
+      _logger.LogDebug("----------------------- test ---------------------");
+      if (filter.PersonID > 0) {
+        _logger.LogError("tets");
+        ctx = ctx.Where((x) => x.PersonID == filter.PersonID);
       }
 
       return ctx

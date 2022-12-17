@@ -35,8 +35,9 @@ public class BaseDbContext : DbContext
     {
         // Set Unique constraints
         modelBuilder.Entity<Login>().HasIndex((x) => x.Username).IsUnique();
-        modelBuilder.Entity<PersonGroup>().HasIndex((x) => new { x.Name, x.PersonID }).IsUnique();
         modelBuilder.Entity<Contact>().HasIndex((x) => new { x.ContactTypeID, x.PersonID, x.Value }).IsUnique();
+        modelBuilder.Entity<PersonGroup>().HasIndex(nameof(PersonGroup.Name), nameof(PersonGroup.PersonID)).IsUnique();
+
         modelBuilder.Entity<ContactType>().HasIndex((x) => x.Name).IsUnique();
         modelBuilder.Entity<TableColumn>().HasIndex((x) => x.Name).IsUnique();
 

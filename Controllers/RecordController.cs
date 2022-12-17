@@ -57,9 +57,11 @@ public class RecordController : BaseController
     }
 
     [HttpPost]
-    public async Task<ActionResult<RecordDTO>> Post(IFormFile file)
+    public async Task<ActionResult<RecordDTO>> Post([FromForm] RecordDTO record)
     {
+        IFormFile? file = Request?.Form?.Files?.FirstOrDefault();
         if (file is null) return BadRequest("file: is a required property");
+        if (record is null) return BadRequest("record is null");
 
         string fileName = Guid.NewGuid().ToString();
         string path = Path.Combine(Directory.GetCurrentDirectory() + "/Temp/UploadedFiles/", fileName.ToString());
@@ -96,7 +98,7 @@ public class RecordController : BaseController
             return Problem("Server was unable to remove the file.");
         }
 
-        data.Name = file.FileName;
+        data.Name = record.Name;
         try {
             data.PersonID = _authManager.GetPersonID(getLoginId().Value);
         } catch (Exception ex)
@@ -105,6 +107,7 @@ public class RecordController : BaseController
             return Unauthorized("User is not logged in");
         }
 
+        if (data.Person is null) _logger.LogError("All good brudda..........................");
         RecordDTO response = new RecordDTO();
         try {
             response = _mapper.Map<RecordDTO>(this._repository.Add(data));
