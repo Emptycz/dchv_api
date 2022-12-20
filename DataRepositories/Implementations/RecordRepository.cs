@@ -21,9 +21,6 @@ namespace dchv_api.DataRepositories.Implementations
 
     public Record Add(Record entity)
     {
-      // FIXME: This is slow as hell, instead of saving thousands of lines,
-      // you should aim for bulk insert, which is insanely faster (like 1000ms -> 6ms faster)
-      // https://entityframeworkcore.com/saving-data-bulk-insert
       _context.Add<Record>(entity);
       _context.SaveChanges();
       return this.Get(entity)!;

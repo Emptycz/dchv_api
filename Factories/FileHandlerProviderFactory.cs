@@ -5,7 +5,7 @@ using System.Collections.Immutable;
 namespace dchv_api.Factories;
 
 
-public class FileHandlerProviderFactory 
+public class FileHandlerProviderFactory
 {
   private readonly IReadOnlyDictionary<string, IFileHandlerProvider> _fileHandlerProviders;
 
@@ -13,9 +13,9 @@ public class FileHandlerProviderFactory
   {
       Type fileHandlerProviderType = typeof(IFileHandlerProvider);
       _fileHandlerProviders = fileHandlerProviderType.Assembly.ExportedTypes
-      .Where(x => fileHandlerProviderType.IsAssignableFrom(x) && 
+      .Where(x => fileHandlerProviderType.IsAssignableFrom(x) &&
         !x.IsInterface && !x.IsAbstract)
-      .Select(x => 
+      .Select(x =>
         {
           var parametlessCtor = x.GetConstructors().SingleOrDefault(c => c.GetParameters().Length == 0);
           return parametlessCtor is not null
@@ -26,7 +26,7 @@ public class FileHandlerProviderFactory
         .ToImmutableDictionary(x => x.FileExtension, x => x);
   }
 
-  public IFileHandlerProvider GetProviderByFileExtension(string extension) 
+  public IFileHandlerProvider GetProviderByFileExtension(string extension)
   {
       var provider = _fileHandlerProviders.GetValueOrDefault(extension);
       return provider ?? throw new NotImplementedException("Provider for this extension is not implemented");

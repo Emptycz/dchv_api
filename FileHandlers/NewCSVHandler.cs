@@ -7,7 +7,7 @@ public class CSVHandler : IFileHandlerProvider
 {
     public string FileExtension { get; } = ".csv";
 
-    public Record ReadFromFile(string pathToFile, string rowSeparator = ";", string colDelimeter = "\r\n")
+    public IEnumerable<RecordData> ReadFromFile(string pathToFile, string rowSeparator = ";", string colDelimeter = "\r\n")
     {
         string data;
         try {
@@ -19,12 +19,12 @@ public class CSVHandler : IFileHandlerProvider
 
         return ReadFromString(data, rowSeparator, colDelimeter);  }
 
-    public Task<Record> ReadFromFileAsync(string pathToFile, string rowSeparator = ";", string colDelimeter = "\r\n")
+    public Task<IEnumerable<RecordData>> ReadFromFileAsync(string pathToFile, string rowSeparator = ";", string colDelimeter = "\r\n")
     {
         throw new NotImplementedException();
     }
 
-    public Record ReadFromString(string data, string colSeparator = ";", string rowSeparator = "\r\n")
+    public IEnumerable<RecordData> ReadFromString(string data, string colSeparator = ";", string rowSeparator = "\r\n")
     {
         List<RecordData> recordData = new List<RecordData>();
         uint currentRow = 0;
@@ -54,10 +54,10 @@ public class CSVHandler : IFileHandlerProvider
             });
         }
 
-        return new Record{Data = recordData};
+        return recordData;
     }
 
-    public Task<Record> ReadFromStringAsync(string data, string rowSeparator = ";", string colDelimeter = "\r\n")
+    public Task<IEnumerable<RecordData>> ReadFromStringAsync(string data, string rowSeparator = ";", string colDelimeter = "\r\n")
     {
         throw new NotImplementedException();
     }

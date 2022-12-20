@@ -32,9 +32,10 @@ public class RecordDataRepository : IRecordDataRepository
     throw new NotImplementedException();
   }
 
-  public Task<IEnumerable<RecordData>> AddAsync(IEnumerable<RecordData> entity)
+  public async Task<IEnumerable<RecordData>> AddAsync(IEnumerable<RecordData> entity)
   {
-    throw new NotImplementedException();
+    await _context.RecordData.BulkInsertAsync(entity);
+    return entity;
   }
 
   public bool Delete(RecordData entity)

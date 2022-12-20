@@ -9,7 +9,7 @@ public interface IFileHandlerProvider
     /// </summary>
     /// <param name="pathToFile"> Path to the file </param>
     /// <returns> Initializies new instance of TableMeta class. </returns>
-    Record ReadFromFile(string pathToFile, string rowSeparator = ";", string colDelimeter = "\r\n");
+    IEnumerable<RecordData> ReadFromFile(string pathToFile, string rowSeparator = ";", string colDelimeter = "\r\n");
 
     /// <summary>
     /// Process content of given string.
@@ -18,14 +18,14 @@ public interface IFileHandlerProvider
     /// <param name="rowSeparator"> Row separator </param>
     /// <param name="colDelimeter"> Column delimeter </param>
     /// <returns> Initializies new instance of TableMeta class. </returns>
-    Record ReadFromString(string data, string rowSeparator = ";", string colDelimeter = "\r\n");
+    IEnumerable<RecordData> ReadFromString(string data, string rowSeparator = ";", string colDelimeter = "\r\n");
 
     /// <summary>
     /// Process content of given table file, such as CSV file.
     /// </summary>
     /// <param name="pathToFile"> Path to the file </param>
     /// <returns> Initializies new instance of TableMeta class. </returns>
-    Task<Record> ReadFromFileAsync(string pathToFile, string rowSeparator = ";", string colDelimeter = "\r\n");
+    Task<IEnumerable<RecordData>> ReadFromFileAsync(string pathToFile, string rowSeparator = ";", string colDelimeter = "\r\n");
 
     /// <summary>
     /// Process content of given string.
@@ -34,7 +34,7 @@ public interface IFileHandlerProvider
     /// <param name="rowSeparator"> Row separator </param>
     /// <param name="colDelimeter"> Column delimeter </param>
     /// <returns> Initializies new instance of TableMeta class. </returns>
-    Task<Record> ReadFromStringAsync(string data, string rowSeparator = ";", string colDelimeter = "\r\n");
+    Task<IEnumerable<RecordData>> ReadFromStringAsync(string data, string rowSeparator = ";", string colDelimeter = "\r\n");
 
     public string FileExtension { get; }
 }

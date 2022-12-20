@@ -19,6 +19,7 @@ public class RecordController : BaseController
     // TODO: Maybe do this as a singleton service?
     private FileHandlerProviderFactory _fileHandlerProviderFactory;
     private readonly IRecordRepository _repository;
+    private readonly IRecordDataRepository _dataRepository;
     private readonly ILogger _logger;
     private readonly AuthManager _authManager;
     private readonly IMapper _mapper;
@@ -28,6 +29,7 @@ public class RecordController : BaseController
     public RecordController(
         ILogger<RecordController> logger,
         IRecordRepository repo,
+        IRecordDataRepository dataRepo,
         AuthManager auth,
         IMapper mapper
     )
@@ -37,6 +39,7 @@ public class RecordController : BaseController
         _repository = repo;
         _fileHandlerProviderFactory = new FileHandlerProviderFactory();
         _mapper = mapper;
+        _dataRepository = dataRepo;
 
         prepareTempDirectory();
     }
@@ -78,11 +81,11 @@ public class RecordController : BaseController
             return Problem(ex.Message);
         }
 
-        Record data;
+        IEnumerable<RecordData>? recordData;
         try {
             _logger.LogDebug("extension? {0}", extension);
             IFileHandlerProvider fileRepository = _fileHandlerProviderFactory.GetProviderByFileExtension(extension);
-             data = fileRepository.ReadFromFile(path.ToString());
+            recordData = fileRepository.ReadFromFile(path.ToString());
         } catch (NotImplementedException ex) {
             _logger.LogError(ex.Message);
             return Problem(ex.Message);
@@ -99,7 +102,7 @@ public class RecordController : BaseController
             return Problem("Server was unable to remove the file.");
         }
 
-        data.Name = record.Name;
+        Record data = new Record{Name = record.Name};
         try {
             data.PersonID = _authManager.GetPersonID(getLoginId().Value);
         } catch (Exception ex)
@@ -110,7 +113,14 @@ public class RecordController : BaseController
 
         RecordDTO response = new RecordDTO();
         try {
-            response = _mapper.Map<RecordDTO>(this._repository.Add(data));
+            var rec = await this._repository.AddAsync(data);
+            for(int key = 0; key < recordData.Count(); key++)
+            {
+                recordData.ElementAt(key).RecordID = rec.ID;
+            }
+            var insertRecData = this._dataRepository.AddAsync(recordData);
+            response = _mapper.Map<RecordDTO>(rec);
+            await insertRecData;
         } catch (Exception ex)
         {
             _logger.LogError(ex.Message);
