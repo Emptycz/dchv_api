@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using dchv_api.Functions;
 using dchv_api.Models;
+using dchv_api.Enums;
 
 namespace dchv_api.Database.Seed;
 
@@ -11,19 +12,19 @@ public static class DbSampleSeed
     {
         context.Database.EnsureDeleted();
         context.Database.EnsureCreated();
-        if (context.Logins.Any())
+        if (context.Login.Any())
         {
             return;   // DB has been seeded
         }
 
         var roles = new Role[2] {
-            new Role{Slug = Enums.RolesEnum.Admin, Name = "Admin"},
-            new Role{Slug = Enums.RolesEnum.User, Name = "User"},
+            new Role{Slug = dchv_api.Enums.RolesEnum.Admin, Name = "Admin"},
+            new Role{Slug = dchv_api.Enums.RolesEnum.User, Name = "User"},
         };
 
         foreach (Role e in roles)
         {
-            context.Roles.Add(e);
+            context.Role.Add(e);
         }
 
         string encryptedPassword = CryptographyManager.SHA256("123");
@@ -41,7 +42,7 @@ public static class DbSampleSeed
 
         foreach (Login e in logins)
         {
-            context.Logins.Add(e);
+            context.Login.Add(e);
         }
 
         var records = new Record[5] {
@@ -79,7 +80,7 @@ public static class DbSampleSeed
 
         foreach (Record e in records)
         {
-            context.Records.Add(e);
+            context.Record.Add(e);
         }
 
         context.SaveChanges();

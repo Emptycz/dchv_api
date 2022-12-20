@@ -19,6 +19,7 @@ public static class DatabaseSeedManager
                 var logger = services.GetRequiredService<ILogger<Program>>();
                 logger.LogError("[DatabaseSeedManager.MigrateUp] Could not reach the database");
                 logger.LogDebug(ex.Message);
+                throw new Exception(ex.Message);
             }
         }
     }
@@ -37,6 +38,7 @@ public static class DatabaseSeedManager
                 var logger = services.GetRequiredService<ILogger<Program>>();
                 logger.LogError("[DatabaseSeedManager.MigrateSampleSeed] Error happened while migrating data");
                 logger.LogDebug(ex.Message);
+                throw new Exception(ex.Message);
             }
         }
     }

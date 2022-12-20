@@ -3,6 +3,8 @@ using dchv_api.Models;
 using dchv_api.DTOs;
 using dchv_api.DataRepositories;
 using Microsoft.AspNetCore.Authorization;
+using dchv_api.RequestModels;
+using AutoMapper;
 
 namespace dchv_api.Controllers;
 
@@ -13,36 +15,41 @@ public class PersonController : BaseController
 {
     private readonly IPersonRepository _repository;
     private readonly ILogger<PersonController> _logger;
-    public PersonController(ILogger<PersonController> logger, IPersonRepository repository)
+    private readonly IMapper _mapper;
+
+    public PersonController(
+        ILogger<PersonController> logger,
+        IPersonRepository repository,
+        IMapper mapper
+    )
     {
         _logger = logger;
         _repository = repository;
+        _mapper = mapper;
     }
 
     [HttpGet("{id}")]
-    public ActionResult<PersonDTO> Get([FromRoute] uint id)
+    public async Task<ActionResult<PersonDTO>> Get([FromRoute] uint id)
     {
-        Person? data = this._repository.Get(new Person{ ID = id });
+        Person? data = await this._repository.GetAsync(new Person{ ID = id });
         if (data is null) return NotFound();
-        //TODO: map DTO to Model
-        return Ok(data);
+        return Ok(_mapper.Map<PersonDTO>(data));
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<PersonDTO>> Get()
+    public async Task<ActionResult<IEnumerable<PersonDTO>>> Get([FromQuery] PersonRequest filter)
     {
-        IEnumerable<Person>? result = _repository.GetAll();
+        IEnumerable<Person?> result = await _repository.GetAllAsync(filter);
         if (result is null || result.Count() == 0) return NoContent();
-        //TODO: map DTO to Model
-        return Ok(result);
+        return Ok(_mapper.Map<IEnumerable<PersonDTO>>(result));
     }
 
     [HttpPost]
-    public ActionResult<PersonDTO> Post([FromBody] PersonDTO entity)
+    public async Task<ActionResult<PersonDTO>> Post([FromBody] PersonDTO entity)
     {
         Person? result = null;
         try {
-            result = this._repository.Add(new Person{
+            result = await this._repository.AddAsync(new Person{
                 Firstname = entity.Firstname,
                 Lastname = entity.Lastname,
                 LoginID = getLoginId().Value
@@ -51,8 +58,7 @@ public class PersonController : BaseController
             _logger.LogError(ex.Message);
             return Problem(ex.Message);
         }
-        //TODO: map DTO to Model
-        return Ok(result);
+        return Ok(_mapper.Map<PersonDTO>(result));
     }
 
     [HttpDelete("{id}")]

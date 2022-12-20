@@ -18,17 +18,25 @@ public class RoleRepository : IRoleRepository
     {
         _context.Add(entity);
         _context.SaveChanges();
-        return _context.Roles.Where(
-            (x) => x.ID == entity.ID && x.Deleted_at == null
-        ).Single();
+        return entity;
     }
 
-    public Task<Role> AddAsync(Role entity)
+  public IEnumerable<Role> Add(IEnumerable<Role> entity)
+  {
+    throw new NotImplementedException();
+  }
+
+  public Task<Role> AddAsync(Role entity)
     {
     throw new NotImplementedException();
     }
 
-    public bool Delete(Role entity)
+  public Task<IEnumerable<Role>> AddAsync(IEnumerable<Role> entity)
+  {
+    throw new NotImplementedException();
+  }
+
+  public bool Delete(Role entity)
     {
     throw new NotImplementedException();
     }
@@ -40,7 +48,7 @@ public class RoleRepository : IRoleRepository
 
     public Role? Get(Role entity)
     {
-        return _context.Roles.Where((x) =>
+        return _context.Role.Where((x) =>
             x.ID == entity.ID
             && x.Deleted_at == null
         ).SingleOrDefault();
@@ -48,17 +56,27 @@ public class RoleRepository : IRoleRepository
 
     public IEnumerable<Role>? GetAll()
     {
-        return _context.Roles.Where((x) =>
+        return _context.Role.Where((x) =>
             x.Deleted_at == null
         );
     }
 
-    public Task<IEnumerable<Role>>? GetAllAsync()
+  public IEnumerable<Role>? GetAll(Role? filter)
+  {
+    throw new NotImplementedException();
+  }
+
+  public Task<IEnumerable<Role>>? GetAllAsync()
     {
     throw new NotImplementedException();
     }
 
-    public Task<Role>? GetAsync(Role entity)
+  public Task<IEnumerable<Role>>? GetAllAsync(Role? filter)
+  {
+    throw new NotImplementedException();
+  }
+
+  public Task<Role>? GetAsync(Role entity)
     {
     throw new NotImplementedException();
     }
@@ -68,8 +86,18 @@ public class RoleRepository : IRoleRepository
     throw new NotImplementedException();
     }
 
-    public Task<Role> UpdateAsync(Role entity)
+  public IEnumerable<Role>? Update(IEnumerable<Role> entity)
+  {
+    throw new NotImplementedException();
+  }
+
+  public Task<Role> UpdateAsync(Role entity)
     {
     throw new NotImplementedException();
     }
+
+  public Task<IEnumerable<Role>>? UpdateAsync(IEnumerable<Role> entity)
+  {
+    throw new NotImplementedException();
+  }
 }

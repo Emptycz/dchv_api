@@ -8,5 +8,4 @@ public enum RolesEnum {
 
   [StringValue("user")]
   User = 2,
-
 }

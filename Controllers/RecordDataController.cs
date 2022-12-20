@@ -32,11 +32,30 @@ public class RecordDataController : BaseController
   }
 
   [HttpGet]
-  public ActionResult<IEnumerable<RecordDataDTO>> Get([FromQuery] RecordDataDTO filter)
+  public ActionResult<IEnumerable<RecordDataDTO>> Get([FromQuery] RecordDataDTO? filter)
   {
-    IEnumerable<RecordData>? data = this._repository.GetAll(_mapper.Map<RecordData>(filter));
-    return _mapper.Map<List<RecordDataDTO>>(data);
+    IEnumerable<RecordData>? data;
+    if (filter is null)
+    {
+      data = this._repository.GetAll();
+    } else {
+      data = this._repository.GetAll(_mapper.Map<RecordData>(filter));
+    }
+    return Ok(_mapper.Map<IEnumerable<RecordDataDTO>>(data));
   }
 
-  // public ActionResult<IEnumerable<RecordDataDTO>> Patch(){}
+  [HttpPatch]
+  public ActionResult<IEnumerable<RecordDataDTO>> Patch([FromBody] IEnumerable<RecordData> data)
+  {
+    try
+    {
+      IEnumerable<RecordData>? result = this._repository.Update(data);
+      if (result is null || result.FirstOrDefault() is null) return NotFound();
+      return Ok(_mapper.Map<IEnumerable<RecordDataDTO>>(result));
+    }
+      catch (Exception ex)
+    {
+      return Problem(ex.Message);
+    }
+  }
 }

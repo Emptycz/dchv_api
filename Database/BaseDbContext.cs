@@ -1,5 +1,4 @@
-using System.Diagnostics;
-using System.Security.Permissions;
+using System;
 using dchv_api.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,35 +10,32 @@ public class BaseDbContext : DbContext
     {
     }
 
-    public DbSet<Login> Logins { get; set; }
-    // I know this is typo, People is correct according to english
-    // but I am trying to be consistent here with table name + "s" pattern
-    public DbSet<Person> Persons { get; set; }
-    public DbSet<Contact> Contacts { get; set; }
-    public DbSet<ContactType> ContactTypes { get; set; }
-    public DbSet<Role> Roles { get; set; }
-    public DbSet<Record> Records { get; set; }
-    public DbSet<RecordData> RecordDatas { get; set; }
-    public DbSet<TableColumn> TableColumns { get; set; }
-    public DbSet<TableData> TableDatas { get; set; }
-    public DbSet<TableGroup> TableGroups { get; set; }
-    public DbSet<PersonGroup> PersonGroups { get; set; }
+    public DbSet<Login> Login { get; set; }
+    public DbSet<Person> Person { get; set; }
+    public DbSet<Contact> Contact { get; set; }
+    public DbSet<ContactType> ContactType { get; set; }
+    public DbSet<Role> Role { get; set; }
+    public DbSet<Record> Record { get; set; }
+    public DbSet<RecordData> RecordData { get; set; }
+    public DbSet<RecordGroup> RecordGroup { get; set; }
+    public DbSet<PersonGroup> PersonGroup { get; set; }
 
     // FIXME: Run this only when debuging (Development run)
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder
-            .LogTo(Console.WriteLine, LogLevel.Information)
+            .LogTo(Console.WriteLine, LogLevel.Debug)
             .EnableDetailedErrors();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.UseCollation("Czech_CI_AS");
+
         // Set Unique constraints
         modelBuilder.Entity<Login>().HasIndex((x) => x.Username).IsUnique();
         modelBuilder.Entity<Contact>().HasIndex((x) => new { x.ContactTypeID, x.PersonID, x.Value }).IsUnique();
-        modelBuilder.Entity<PersonGroup>().HasIndex(nameof(PersonGroup.Name), nameof(PersonGroup.PersonID)).IsUnique();
+        modelBuilder.Entity<PersonGroup>().HasIndex(nameof(dchv_api.Models.PersonGroup.Name), nameof(dchv_api.Models.PersonGroup.PersonID)).IsUnique();
 
         modelBuilder.Entity<ContactType>().HasIndex((x) => x.Name).IsUnique();
-        modelBuilder.Entity<TableColumn>().HasIndex((x) => x.Name).IsUnique();
 
         modelBuilder.Entity<PersonGroupRelations>()
             .HasKey((x) => x.ID);
@@ -47,7 +43,9 @@ public class BaseDbContext : DbContext
             .HasIndex((x) => new { x.PersonID, x.PersonGroupID, x.Deleted_at }).IsUnique();
 
         modelBuilder.Entity<Record>()
-            .Property(x => x.Name).HasColumnType("nvarchar(max)").IsUnicode();
+            .HasOne(x => x.RecordGroup)
+            .WithMany(x => x.Records)
+            .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<PersonGroupRelations>()
             .HasOne(x => x.Person)
@@ -60,6 +58,20 @@ public class BaseDbContext : DbContext
             .WithMany(x => x.Members)
             .HasForeignKey(x => x.PersonGroupID)
             .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<RecordGroup>()
+            .HasMany(x => x.ChildGroups)
+            .WithOne()
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        // FIXME: Need to create trigger for this
+        modelBuilder.Entity<RecordData>()
+            .Property(x => x.Modified_at).ValueGeneratedOnUpdate();
+
+        // modelBuilder.Entity<Record>()
+        //     .HasMany(x => x.Tags)
+        //     .WithMany(x => x.Record);
 
         base.OnModelCreating(modelBuilder);
     }

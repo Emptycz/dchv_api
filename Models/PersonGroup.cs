@@ -7,7 +7,6 @@ public class PersonGroup : BaseModel
     public uint ID { get; set; }
     public string Name { get; set; } = String.Empty;
     public string? DisplayName { get; set; }
-
     public uint PersonID { get; set; }
 
     [ForeignKey("PersonID")]

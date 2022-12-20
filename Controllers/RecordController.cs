@@ -7,6 +7,7 @@ using dchv_api.Services;
 using dchv_api.DTOs;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using dchv_api.RequestModels;
 
 namespace dchv_api.Controllers;
 
@@ -41,9 +42,9 @@ public class RecordController : BaseController
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<RecordDTO>> Get([FromQuery] RecordDTO filter)
+    public ActionResult<IEnumerable<RecordDTO>> Get([FromQuery] RecordRequest options)
     {
-        IEnumerable<Record>? data = this._repository.GetAll(_mapper.Map<Record>(filter));
+        IEnumerable<Record>? data = this._repository.GetAll(options);
         if (data?.Count() == 0) return NotFound();
         return _mapper.Map<List<RecordDTO>>(data);
     }
@@ -61,7 +62,7 @@ public class RecordController : BaseController
     {
         IFormFile? file = Request?.Form?.Files?.FirstOrDefault();
         if (file is null) return BadRequest("file: is a required property");
-        if (record is null) return BadRequest("record is null");
+        if (record is null) return BadRequest("record: server could not auto-map Record");
 
         string fileName = Guid.NewGuid().ToString();
         string path = Path.Combine(Directory.GetCurrentDirectory() + "/Temp/UploadedFiles/", fileName.ToString());
@@ -107,7 +108,6 @@ public class RecordController : BaseController
             return Unauthorized("User is not logged in");
         }
 
-        if (data.Person is null) _logger.LogError("All good brudda..........................");
         RecordDTO response = new RecordDTO();
         try {
             response = _mapper.Map<RecordDTO>(this._repository.Add(data));
@@ -139,4 +139,6 @@ public class RecordController : BaseController
             return false;
         }
     }
+
 }
+
