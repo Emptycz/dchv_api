@@ -45,17 +45,11 @@ public class RecordDataController : BaseController
   }
 
   [HttpPatch]
-  public ActionResult<IEnumerable<RecordDataDTO>> Patch([FromBody] IEnumerable<RecordData> data)
+  public async Task<ActionResult<IEnumerable<RecordDataDTO>>> Patch([FromBody] IEnumerable<RecordData> data)
   {
-    try
-    {
-      IEnumerable<RecordData>? result = this._repository.Update(data);
-      if (result is null || result.FirstOrDefault() is null) return NotFound();
-      return Ok(_mapper.Map<IEnumerable<RecordDataDTO>>(result));
-    }
-      catch (Exception ex)
-    {
-      return Problem(ex.Message);
-    }
+      if (data is null || data.Count() == 0) return BadRequest("data: is a required property");
+      var response = await this._repository.UpdateAsync(_mapper.Map<IEnumerable<RecordData>>(data));
+      if (response is null || response.Count() == 0) return NotFound();
+      return Ok(response);
   }
 }
