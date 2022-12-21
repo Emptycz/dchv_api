@@ -20,12 +20,6 @@ public class BaseDbContext : DbContext
     public DbSet<RecordGroup> RecordGroup { get; set; }
     public DbSet<PersonGroup> PersonGroup { get; set; }
 
-    // FIXME: Run this only when debuging (Development run)
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder
-            .LogTo(Console.WriteLine, LogLevel.Debug)
-            .EnableDetailedErrors();
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("Czech_CI_AS");

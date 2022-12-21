@@ -39,7 +39,7 @@ internal class Program
         ValidIssuer = builder.Configuration.GetSection("Jwt").GetValue<string>("Issuer"),
         ValidAudience = builder.Configuration.GetSection("Jwt").GetValue<string>("Audience"),
         IssuerSigningKey = new SymmetricSecurityKey(
-          System.Text.Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Jwt").GetValue<string>("Key"))
+          System.Text.Encoding.UTF8.GetBytes(builder.Configuration.GetRequiredSection("Jwt").GetValue<string>("Key")!)
       )
       };
     });
@@ -51,6 +51,15 @@ internal class Program
         var context = serviceProvider.GetService<IHttpContextAccessor>();
         var options = new DbContextOptionsBuilder<BaseDbContext>();
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+
+        if (builder.Environment.IsDevelopment()) {
+          options.LogTo(Console.WriteLine, LogLevel.Debug);
+          options.EnableDetailedErrors();
+          options.EnableSensitiveDataLogging();
+        } else {
+          options.LogTo(Console.WriteLine, LogLevel.Warning);
+        }
+
         if (context?.HttpContext?.User?.Identity?.IsAuthenticated == true)
         {
             // Try to find PrimarySID from JWT claims (PersonId)
@@ -82,13 +91,19 @@ internal class Program
       if (args.Length != 0) app.Logger.LogDebug("arg[0] {0}", args[0]);
       DatabaseSeedManager.MigrateUp(app);
       if (args.Contains("--sample")) DatabaseSeedManager.MigrateSampleSeed(app);
+
+      app.UseHttpsRedirection();
     }
 
-    app.UseHttpsRedirection();
-
-    app.UseCors(x => x.AllowAnyHeader()
+    var allowedCors = app.Configuration.GetSection("CORS").GetValue<string>("AllowedURL");
+    if (!(allowedCors is null) && allowedCors.Length > 0)
+    {
+      app.UseCors(x => x.AllowAnyHeader()
         .AllowAnyMethod()
-        .WithOrigins("http://localhost:3000", ""));
+        .WithOrigins(allowedCors));
+    } else {
+      app.Logger.LogWarning("config file is missing `CORS` settings, CORS is not enabled!");
+    }
 
     app.UseAuthentication();
     app.UseAuthorization();
