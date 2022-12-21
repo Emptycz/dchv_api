@@ -24,7 +24,7 @@ public class RecordController : BaseController
     private readonly AuthManager _authManager;
     private readonly IMapper _mapper;
 
-    private readonly string _tempDir = "/Temp/UploadedFiles";
+    private readonly string _tempDir = "Temp/UploadedFiles";
 
     public RecordController(
         ILogger<RecordController> logger,
@@ -130,11 +130,25 @@ public class RecordController : BaseController
         return Ok(response);
     }
 
+    // [HttpPatch("{id}")]
+    // public async Task<ActionResult<Record>> Patch([FromRoute] uint id, [FromBody] RecordDTO record)
+    // {
+    //     if (record.Data is null || record.Data.Count == 0) return BadRequest("data: is a required property");
+    //     record.ID = id;
+    //     for (int i = 0; i < record.Data.Count; i++)
+    //     {
+    //         record.Data.ElementAt(i).RecordID = id;
+    //     }
+    //     record.Data = _mapper.Map<ICollection<RecordDataDTO>>(
+    //         await this._dataRepository.UpdateAsync(
+    //             _mapper.Map<IEnumerable<RecordData>>(record.Data)
+    //         )
+    //     );
+    //     return Ok(record);
+    // }
+
     private bool prepareTempDirectory()
     {
-        // FIXME: Probably does not work, this also should be separate fn
-        //        that should be triggered upon app start, so move it into
-        //        program.cs
         if (Directory.Exists(Directory.GetCurrentDirectory() + this._tempDir)) {
             return true;
         }
