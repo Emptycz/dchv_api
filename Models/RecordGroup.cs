@@ -8,7 +8,7 @@ public class RecordGroup : BaseModel
     [Key]
     public uint ID { get; set; }
     public uint PersonID { get; set; }
-    // public uint? RecordGroupID { get; set; }
+    public uint? RecordGroupID { get; set; }
     public string? Name { get; set; }
 
     [ForeignKey("PersonID")]

@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices.ComTypes;
 using dchv_api.Database;
 using dchv_api.Models;
 
@@ -34,7 +33,8 @@ public class RecordDataRepository : IRecordDataRepository
 
   public async Task<IEnumerable<RecordData>> AddAsync(IEnumerable<RecordData> entity)
   {
-    await _context.RecordData.BulkInsertAsync(entity);
+    await _context.RecordData.AddRangeAsync(entity);
+    await _context.SaveChangesAsync();
     return entity;
   }
 
@@ -95,7 +95,8 @@ public class RecordDataRepository : IRecordDataRepository
     //   var up = entity.Where((x) => x.ID == records[key].ID).SingleOrDefault();
     //   records[key].Value = up is null ? records[key].Value : up.Value;
     // }
-    _context.RecordData.BulkUpdate(entity);
+    // _context.RecordData.BulkUpdate(entity);
+    _context.RecordData.UpdateRange(entity);
     _context.SaveChanges();
     return entity;
   }

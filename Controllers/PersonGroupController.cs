@@ -51,6 +51,11 @@ public class PersonGroupController : BaseController
     public ActionResult<PersonGroupDTO> Post([FromBody] PersonGroup data)
     {
         data.PersonID = _authManager.GetPersonID(getLoginId().Value);
+        if (data.Members?.FirstOrDefault((x) => x.PersonID == data.PersonID) is null)
+        {
+            data.Members?.Add(new PersonGroupRelations { PersonID = data.PersonID});
+        }
+
         PersonGroup? result = null;
         try
         {

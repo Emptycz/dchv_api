@@ -21,6 +21,7 @@ internal class Program
     builder.Services.AddScoped<IRoleRepository, RoleRepository>();
     builder.Services.AddScoped<IPersonGroupRepository, PersonGroupRepository>();
     builder.Services.AddScoped<IRecordDataRepository, RecordDataRepository>();
+    builder.Services.AddScoped<IRecordCanvasRepository, RecordCanvasRepository>();
 
     builder.Services.AddScoped<JwtManager>();
     builder.Services.AddScoped<AuthManager>();
