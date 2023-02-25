@@ -17,11 +17,20 @@ public class CSVHandler : IFileHandlerProvider
             throw new FileLoadException(ex.Message);
         }
 
-        return ReadFromString(data, rowSeparator, colDelimeter);  }
+        return ReadFromString(data, rowSeparator, colDelimeter);
+    }
 
-    public Task<IEnumerable<RecordData>> ReadFromFileAsync(string pathToFile, string rowSeparator = ";", string colDelimeter = "\r\n")
+    public async Task<IEnumerable<RecordData>> ReadFromFileAsync(string pathToFile, string rowSeparator = ";", string colDelimeter = "\r\n")
     {
-        throw new NotImplementedException();
+        string data;
+        try {
+            data = await File.ReadAllTextAsync(pathToFile);
+        } catch (Exception ex)
+        {
+            throw new FileLoadException(ex.Message);
+        }
+
+        return ReadFromString(data, rowSeparator, colDelimeter);
     }
 
     public IEnumerable<RecordData> ReadFromString(string data, string colSeparator = ";", string rowSeparator = "\r\n")

@@ -61,8 +61,8 @@ public class LoginRepository : ILoginRepository
         return _context.Login
             ?.Include(login => login.Persons)
             ?.ThenInclude((person) => person.Roles)
-            .AsSplitQuery()
-            .Where((x) => x.Deleted_at == null).ToArray();
+            .Where((x) => x.Deleted_at == null).ToArray()
+            .OrderByDescending((x) => x.ID);
     }
 
   public async Task<Login?> GetAsync(Login entity)
@@ -72,7 +72,6 @@ public class LoginRepository : ILoginRepository
           .ThenInclude((person) => person.Roles)
           .Include(login => login.Persons)
           .ThenInclude((person) => person.Contacts)
-          .AsSplitQuery()
           .Where(
               (x) => x.ID == entity.ID && x.Deleted_at == null
           ).SingleAsync();
@@ -82,8 +81,9 @@ public class LoginRepository : ILoginRepository
     {
         return _context.Login
             ?.Include(login => login.Persons)
-            .ThenInclude((person) => person.Roles)
-            .Where((x) => x.Deleted_at == null);
+            ?.ThenInclude((person) => person.Roles)
+            .Where((x) => x.Deleted_at == null)
+            .OrderByDescending((x) => x.ID);
     }
 
   public async Task<IEnumerable<Login?>> GetAllAsync()
