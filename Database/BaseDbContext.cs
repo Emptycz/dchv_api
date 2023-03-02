@@ -48,6 +48,9 @@ public class BaseDbContext : DbContext
             .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<PersonGroupRelations>()
+            .Property(x => x.State).HasDefaultValue(PersonGroupRelationState.waiting);
+
+        modelBuilder.Entity<PersonGroupRelations>()
             .HasOne(x => x.Group)
             .WithMany(x => x.Members)
             .HasForeignKey(x => x.PersonGroupID)
