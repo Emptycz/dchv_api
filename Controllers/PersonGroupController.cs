@@ -51,11 +51,12 @@ public class PersonGroupController : BaseController
     public ActionResult<PersonGroupDTO> Post([FromBody] PersonGroup data)
     {
         data.PersonID = _authManager.GetPersonID(getLoginId().Value);
-        if (data.Members?.FirstOrDefault((x) => x.PersonID == data.PersonID) is null)
+        int? authorIndex = data.Members?.ToList().FindIndex((x) => x.PersonID == data.PersonID);
+        if (authorIndex is not null)
         {
-            data.Members?.Add(new PersonGroupRelations { PersonID = data.PersonID});
+            data.Members?.Remove(new PersonGroupRelations { PersonID = data.PersonID, State = PersonGroupRelationState.waiting });
         }
-
+        data.Members?.Add(new PersonGroupRelations { PersonID = data.PersonID, State = PersonGroupRelationState.joined });
         PersonGroup? result = null;
         try
         {
