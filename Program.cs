@@ -22,6 +22,7 @@ internal class Program
     builder.Services.AddScoped<IPersonGroupRepository, PersonGroupRepository>();
     builder.Services.AddScoped<IRecordDataRepository, RecordDataRepository>();
     builder.Services.AddScoped<IRecordCanvasRepository, RecordCanvasRepository>();
+    builder.Services.AddScoped<IPersonGroupRelationsRepository, PersonGroupRelationsRepository>();
 
     builder.Services.AddScoped<JwtManager>();
     builder.Services.AddScoped<AuthManager>();
@@ -102,6 +103,11 @@ internal class Program
       app.UseCors(x => x.AllowAnyHeader()
         .AllowAnyMethod()
         .WithOrigins(allowedCors));
+
+      app.UseCors(x => x.AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowAnyOrigin());
+
     } else {
       app.Logger.LogWarning("config file is missing `CORS` settings, CORS is not enabled!");
     }

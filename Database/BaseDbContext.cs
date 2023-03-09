@@ -19,6 +19,9 @@ public class BaseDbContext : DbContext
     public DbSet<RecordData> RecordData { get; set; }
     public DbSet<RecordGroup> RecordGroup { get; set; }
     public DbSet<PersonGroup> PersonGroup { get; set; }
+    public DbSet<PersonGroupRelations> PersonGroupRelations { get; set; }
+    public DbSet<PersonGroupRecord> PersonGroupRecord { get; set; }
+    public DbSet<PersonGroupRecordGroup> PersonGroupRecordGroup { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -60,6 +63,29 @@ public class BaseDbContext : DbContext
             .HasMany(x => x.ChildGroups)
             .WithOne()
             .IsRequired(false)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<RecordGroup>()
+            .HasMany(x => x.SharedPersonGroups)
+            .WithOne(x => x.RecordGroup)
+            .OnDelete(DeleteBehavior.NoAction);
+
+
+        modelBuilder.Entity<PersonGroupRecord>()
+            .HasOne(x => x.PersonGroup)
+            .WithMany(x => x.SharedRecords)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<PersonGroupRecordGroup>()
+            .HasOne(x => x.PersonGroup)
+            .WithMany(x => x.SharedRecordGroups)
+            .HasForeignKey(x => x.RecordGroupID)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<PersonGroupRecordGroup>()
+            .HasOne(x => x.RecordGroup)
+            .WithMany(x => x.SharedPersonGroups)
+            .HasForeignKey(x => x.PersonGroupID)
             .OnDelete(DeleteBehavior.NoAction);
 
         // FIXME: Need to create trigger for this

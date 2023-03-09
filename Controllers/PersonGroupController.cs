@@ -14,12 +14,12 @@ namespace dchv_api.Controllers;
 public class PersonGroupController : BaseController
 {
     private readonly IPersonGroupRepository _repository;
-    private readonly ILogger<PersonController> _logger;
+    private readonly ILogger<PersonGroupController> _logger;
     private readonly IMapper _mapper;
     private readonly AuthManager _authManager;
 
     public PersonGroupController(
-        ILogger<PersonController> logger,
+        ILogger<PersonGroupController> logger,
         IPersonGroupRepository repository,
         IMapper mapper,
         AuthManager auth
@@ -51,8 +51,7 @@ public class PersonGroupController : BaseController
     public ActionResult<PersonGroupDTO> Post([FromBody] PersonGroup data)
     {
         data.PersonID = _authManager.GetPersonID(getLoginId().Value);
-        int? authorIndex = data.Members?.ToList().FindIndex((x) => x.PersonID == data.PersonID);
-        if (authorIndex is not null)
+        if (data.Members?.Single((x) => x.PersonID == data.PersonID && x.State == PersonGroupRelationState.waiting) is not null)
         {
             data.Members?.Remove(new PersonGroupRelations { PersonID = data.PersonID, State = PersonGroupRelationState.waiting });
         }
@@ -66,7 +65,15 @@ public class PersonGroupController : BaseController
             _logger.LogError(ex.Message);
             return Problem(ex.Message);
         }
-        return Ok(_mapper.Map<PersonGroup, PersonGroupDTO>(result));
+        var res = _mapper.Map<PersonGroup, PersonGroupDTO>(result);
+        // TODO: This should be optimized (prevention of JSON reference cycling in DTOs...)
+        var members = res.Members.ToList();
+        for (int i = 0; i < members!.Count(); i++)
+        {
+            members[i].Group = null;
+        }
+        res.Members = members;
+        return Ok(res);
     }
 
     [HttpDelete("{id}")]

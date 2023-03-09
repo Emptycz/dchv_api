@@ -16,5 +16,6 @@ public class Record : BaseModel
     [ForeignKey("RecordGroupID")]
     public virtual RecordGroup? RecordGroup { get; set; }
     public virtual ICollection<RecordData>? Data { get; set; }
+    public virtual ICollection<PersonGroupRecord>? SharedPersonGroups { get; set; }
     // public virtual ICollection<Tag>? Tags { get; set; }
 }

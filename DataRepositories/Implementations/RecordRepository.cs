@@ -45,7 +45,14 @@ namespace dchv_api.DataRepositories.Implementations
 
     public bool Delete(Record entity)
     {
-      throw new NotImplementedException();
+      List<Record> recs = _context.Record.Where((x) => x.ID == entity.ID).ToList();
+      recs = recs.ConvertAll<Record>(rec => {
+        rec.Deleted_at = DateTime.Now;
+        return rec;
+      });
+
+      _context.Record.UpdateRange(recs);
+      return _context.SaveChanges() > 0;
     }
 
     public Task<bool> DeleteAsync(Record entity)
@@ -67,16 +74,7 @@ namespace dchv_api.DataRepositories.Implementations
     {
       var ctx = _context.Record.AsQueryable();
 
-      if (!String.IsNullOrEmpty(filter?.Name))
-      {
-        ctx = ctx.Where((x) => x.Name.Contains(filter.Name));
-      }
-
-      if (filter?.PersonID > 0)
-      {
-        ctx = ctx.Where((x) => x.PersonID == filter.PersonID);
-      }
-
+      ctx = _prepareFilteredQuery(ctx, filter);
       ctx = QueryableHelper<Record>.ApplyQuery(ctx, filter);
 
       return ctx
@@ -97,16 +95,7 @@ namespace dchv_api.DataRepositories.Implementations
     {
       var ctx = _context.Record.AsQueryable();
 
-      if (!String.IsNullOrEmpty(filter?.Name))
-      {
-        ctx = ctx.Where((x) => x.Name.Contains(filter.Name));
-      }
-
-      if (filter?.PersonID > 0)
-      {
-        ctx = ctx.Where((x) => x.PersonID == filter.PersonID);
-      }
-
+      ctx = _prepareFilteredQuery(ctx, filter);
       ctx = QueryableHelper<Record>.ApplyQuery(ctx, filter);
 
       return await ctx
@@ -151,5 +140,51 @@ namespace dchv_api.DataRepositories.Implementations
     {
       throw new NotImplementedException();
     }
+
+    private IQueryable<Record> _prepareFilteredQuery(IQueryable<Record> ctx, RecordRequest? filter)
+    {
+        if (!String.IsNullOrEmpty(filter?.Name))
+        {
+          ctx = ctx.Where((x) => x.Name.Contains(filter.Name));
+        }
+
+        if (filter?.PersonID > 0)
+        {
+          ctx = ctx.Where((x) => x.PersonID == filter.PersonID);
+        }
+
+        if (filter?.Data is not null && filter?.Data.Count() > 0)
+        {
+          foreach(var condition in filter.Data)
+          {
+            // TODO: This is terrible (if hell)... Create delegate functions for each use case
+            if (condition.Row is null && condition.Column is null)
+            {
+              ctx = ctx.Where((x) => x.Data!.Where((y) => y.Value == condition.Value).Count() > 0);
+            }
+            else if (condition.Row is not null && condition.Column is null)
+            {
+              ctx = ctx.Where((x) => x.Data!.Where((y) =>
+                y.Value == condition.Value &&
+                y.Row == condition.Row
+              ).Count() > 0);
+            } else if (condition.Row is null && condition.Column is not null)
+            {
+              ctx = ctx.Where((x) => x.Data!.Where((y) =>
+                y.Value == condition.Value &&
+                y.Column == condition.Column
+              ).Count() > 0);
+            } else {
+              ctx = ctx.Where((x) => x.Data!.Where((y) =>
+                y.Value == condition.Value &&
+                y.Column == condition.Column &&
+                y.Row == condition.Row
+              ).Count() > 0);
+            }
+          }
+        }
+        return ctx;
+    }
+
   }
 }

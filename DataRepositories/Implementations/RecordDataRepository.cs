@@ -40,7 +40,15 @@ public class RecordDataRepository : IRecordDataRepository
 
   public bool Delete(RecordData entity)
   {
-    throw new NotImplementedException();
+      List<RecordData> recs = _context.RecordData.Where((x) => x.RecordID == entity.ID).ToList();
+      recs = recs.ConvertAll<RecordData>(rec => {
+        rec.Deleted_at = DateTime.Now;
+        return rec;
+      });
+
+      _context.RecordData.UpdateRange(recs);
+      return _context.SaveChanges() > 0;
+
   }
 
   public Task<bool> DeleteAsync(RecordData entity)

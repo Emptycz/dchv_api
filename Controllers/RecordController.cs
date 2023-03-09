@@ -147,6 +147,14 @@ public class RecordController : BaseController
     //     return Ok(record);
     // }
 
+    [HttpDelete("{id}")]
+    public ActionResult<Boolean> Delete([FromRoute] uint id)
+    {
+        _dataRepository.Delete(new RecordData{RecordID = id});
+        Boolean res = _repository.Delete(new Record{ID = id});
+        return res == true ? Ok(true) : NotFound();
+    }
+
     private bool prepareTempDirectory()
     {
         if (Directory.Exists(Directory.GetCurrentDirectory() + this._tempDir)) {

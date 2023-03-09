@@ -18,4 +18,5 @@ public class RecordGroup : BaseModel
     // [InverseProperty("ParentGroup")]
     public virtual ICollection<RecordGroup>? ChildGroups { get; set; }
     public virtual ICollection<Record>? Records { get; set; }
+    public virtual ICollection<PersonGroupRecordGroup>? SharedPersonGroups { get; set; }
 }

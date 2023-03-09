@@ -19,6 +19,7 @@ public class PersonDbContext : BaseDbContext
         mb.Entity<Person>().HasQueryFilter(b => b.ID == _personId);
         mb.Entity<Contact>().HasQueryFilter(b => b.PersonID == _personId);
         mb.Entity<Login>().HasQueryFilter(b => b.Persons != null && b.Persons.FirstOrDefault((y) => y.ID == _personId) != null);
+        mb.Entity<PersonGroupRelations>().HasQueryFilter(b => b.Group!.PersonID == _personId || b.PersonID == _personId);
 
         base.OnModelCreating(mb);
     }

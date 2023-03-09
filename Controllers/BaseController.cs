@@ -5,7 +5,7 @@ namespace dchv_api.Controllers;
 public class BaseController : ControllerBase
 {
 
-    protected ActionResult<uint> getLoginId() 
+    protected ActionResult<uint> getLoginId()
     {
         string val;
         try {

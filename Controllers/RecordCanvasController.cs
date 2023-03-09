@@ -4,6 +4,7 @@ using dchv_api.DataRepositories;
 using dchv_api.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using dchv_api.RequestModels;
 
 namespace dchv_api.Controllers;
 
@@ -34,9 +35,9 @@ public class RecordCanvasController : BaseController
     }
 
     [HttpGet]
-    public ActionResult<RecordCanvasDTO> GetAll()
+    public ActionResult<RecordCanvasDTO> GetAll([FromQuery] RecordCanvasRequest filter)
     {
-        var data = this._repository.GetRootDirectoryContent();
+        var data = this._repository.GetRootDirectoryContent(filter);
         if (data is null) return NoContent();
         return data;
     }

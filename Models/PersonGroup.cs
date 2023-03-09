@@ -12,6 +12,6 @@ public class PersonGroup : BaseModel
     [ForeignKey("PersonID")]
     public virtual Person? Person { get; set; }
     public virtual ICollection<PersonGroupRelations>? Members { get; set; }
-    public virtual ICollection<Record>? SharedRecords { get; set; }
-    public virtual ICollection<RecordGroup>? SharedRecordGroups { get; set; }
+    public virtual ICollection<PersonGroupRecord>? SharedRecords { get; set; }
+    public virtual ICollection<PersonGroupRecordGroup>? SharedRecordGroups { get; set; }
 }

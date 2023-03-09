@@ -76,7 +76,8 @@ public class PersonGroupRepository : IPersonGroupRepository
     {
         return _context.PersonGroup
             .Include(pg => pg.Person)
-            .Where((x) => x.Deleted_at == null);
+            .Where((x) => x.Deleted_at == null)
+            .OrderByDescending((x) => x.Created_at);
     }
 
   public IEnumerable<PersonGroup>? GetAll(PersonGroup? filter)
